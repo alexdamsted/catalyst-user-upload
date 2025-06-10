@@ -28,7 +28,7 @@ class UserUpload {
 		}
 	}
 
-	private function showHelp() {
+	private function showHelp(): void {
         	echo "Options:\n";
         	echo "  --file [csv_file]     CSV file to process\n";
         	echo "  --create_table        Create the users table (no other action taken)\n";

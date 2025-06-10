@@ -3,6 +3,7 @@
 class UserUpload {
 	
 	private $options = [];
+	private $pdo = null;
 
 	/**
 	 * u - MySQL username
@@ -59,17 +60,15 @@ class UserUpload {
 			$dsn = "mysql:host={$host}";
 
 			// Get pdo exceptions and arrays with column name keys
-            		$pdo = new PDO($dsn, $username, $password, [
+            		$this->$pdo = new PDO($dsn, $username, $password, [
                 		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 			]);
 			
-			$pdo->exec("CREATE DATABASE IF NOT EXISTS user_upload_db");
-            		$pdo->exec("USE user_upload_db");
+			$this->$pdo->exec("CREATE DATABASE IF NOT EXISTS user_upload_db");
+            		$this->$pdo->exec("USE user_upload_db");
             
             		echo "Connected to MySQL database successfully.\n";
-		
-			return $pdo;
 		} catch(PDOException $e) {	
 			throw new Exception("Database startup failed: " . $e->getMessage());
 		}
@@ -85,6 +84,24 @@ class UserUpload {
 		connect($host, $username, $password);
 	}
 
+	private function createTable(): void {
+		$sql = "
+            	CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                surname VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 
+		try {
+			// Rebuild the table and or  create as new
+            		$this->pdo->exec("DROP TABLE IF EXISTS users");
+            		$this->pdo->exec($sql);
+            		echo "Table created.\n";
+        	} catch (PDOException $e) {
+            		throw new Exception("Failed to create table: " . $e->getMessage());
+        	}
+	}
 
 }

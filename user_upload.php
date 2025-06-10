@@ -1,7 +1,7 @@
 <?php
 
 class UserUpload {
-
+	
 	private $options = [];
 
 	/**
@@ -41,6 +41,50 @@ class UserUpload {
         	echo "  php user_upload.php --help\n";
         	echo "  php user_upload.php --create_table -u user -p password -h localhost --dry_run\n";
     	}
+
+	private function get(): array|bool {
+		$host = $this->options['h'] ?? null;
+		$username = $this->options['u'] ?? null;
+		$password = $this->options['p'] ?? null;
+
+		if (!empty($host) && !empty($username) && !empty($password)) {
+        		return [$host, $username, $password];
+		}
+
+		return false;
+	}
+
+	private function connect(): PDO {
+		try {
+			$dsn = "mysql:host={$host}";
+
+			// Get pdo exceptions and arrays with column name keys
+            		$pdo = new PDO($dsn, $username, $password, [
+                		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+			]);
+			
+			$pdo->exec("CREATE DATABASE IF NOT EXISTS user_upload_db");
+            		$pdo->exec("USE user_upload_db");
+            
+            		echo "Connected to MySQL database successfully.\n";
+		
+			return $pdo;
+		} catch(PDOException $e) {	
+			throw new Exception("Database startup failed: " . $e->getMessage());
+		}
+	}	
+
+	private function start(): void {
+		if($creds = $this->get()) {
+			[$host, $username, $password] = $creds;
+		} else {
+			throw new Exception("Missing host, username, or password");
+		}
+
+		connect($host, $username, $password);
+	}
+
 
 
 }

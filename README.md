@@ -9,7 +9,12 @@ PHP PDO MySQL extension
 
 Setup
 Clone/Download the repository
-git clone 
+
+HTTPS:
+git clone https://github.com/alexdamsted/catalyst-user-upload.git catalyst-user-upload
+
+SSH:
+git clone git@github.com:alexdamsted/catalyst-user-upload.git catalyst-user-upload  
 
 # This script requires you have a password for your mysql database
 mysql -u root -p
